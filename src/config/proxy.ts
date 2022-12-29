@@ -2,7 +2,7 @@ export default {
   isRequestProxy: true,
   development: {
     // 开发环境接口请求
-    host: 'https://service-exndqyuk-1257786608.gz.apigw.tencentcs.com',
+    host: 'http://localhost:1270',
     // 开发环境 cdn 路径
     cdn: '',
   },
@@ -14,6 +14,12 @@ export default {
   },
   release: {
     // 正式环境接口地址
+    host: 'https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com',
+    // 正式环境 cdn 路径
+    cdn: '',
+  },
+  site: {
+    // TDesign部署特殊需要 与release功能一致
     host: 'https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com',
     // 正式环境 cdn 路径
     cdn: '',

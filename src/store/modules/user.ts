@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { TOKEN_NAME } from '@/config/global';
 import { store, usePermissionStore } from '@/store';
+import { login } from '@/api/user';
 
 const InitUserInfo = {
   roles: [],
@@ -8,7 +9,7 @@ const InitUserInfo = {
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    token: localStorage.getItem(TOKEN_NAME) || 'main_token', // 默认token不走权限
+    token: localStorage.getItem(TOKEN_NAME), // 默认token不走权限
     userInfo: { ...InitUserInfo },
   }),
   getters: {
@@ -21,6 +22,9 @@ export const useUserStore = defineStore('user', {
       const mockLogin = async (userInfo: Record<string, unknown>) => {
         // 登录请求流程
         console.log(userInfo);
+        const res = await login(userInfo);
+        console.log('[Login]', res);
+
         // const { account, password } = userInfo;
         // if (account !== 'td') {
         //   return {
@@ -41,7 +45,7 @@ export const useUserStore = defineStore('user', {
         return {
           code: 200,
           message: '登陆成功',
-          data: 'main_token',
+          data: res,
         };
       };
 
@@ -54,20 +58,23 @@ export const useUserStore = defineStore('user', {
     },
     async getUserInfo() {
       const mockRemoteUserInfo = async (token: string) => {
-        if (token === 'main_token') {
-          return {
-            name: 'td_main',
-            roles: ['all'],
-          };
-        }
+        // if (token === 'main_token') {
+        token = token.replaceAll('_', '/').replaceAll('-', '+'); // 添加这一行
+        const user = JSON.parse(window.atob(token.split('.')[1]));
+        console.log(user);
+
         return {
-          name: 'td_dev',
-          roles: ['UserIndex', 'DashboardBase', 'login'],
+          name: user.Name,
+          roles: ['UserIndex', 'DashboardBase', 'login', 'ListBase'],
         };
+        // }
+        // return {
+        //   name: 'td_dev',
+        //   roles: ['UserIndex', 'DashboardBase', 'login'],
+        // };
       };
 
       const res = await mockRemoteUserInfo(this.token);
-
       this.userInfo = res;
     },
     async logout() {

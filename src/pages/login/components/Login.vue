@@ -33,23 +33,23 @@
         </t-input>
       </t-form-item>
 
-      <!-- <div class="check-container remember-pwd">
+      <div class="check-container remember-pwd">
         <t-checkbox>记住账号</t-checkbox>
         <span class="tip">忘记账号？</span>
-      </div> -->
+      </div>
     </template>
 
     <!-- 扫码登陆 -->
-    <!-- <template v-else-if="type == 'qrcode'">
+    <template v-else-if="type == 'qrcode'">
       <div class="tip-container">
         <span class="tip">请使用微信扫一扫登录</span>
         <span class="refresh">刷新 <t-icon name="refresh" /> </span>
       </div>
       <qrcode-vue value="" :size="192" level="H" />
-    </template> -->
+    </template>
 
     <!-- 手机号登陆 -->
-    <!-- <template v-else>
+    <template v-else>
       <t-form-item name="phone">
         <t-input v-model="formData.phone" size="large" placeholder="请输入手机号码">
           <template #prefix-icon>
@@ -64,7 +64,7 @@
           {{ countDown == 0 ? '发送验证码' : `${countDown}秒后可重发` }}
         </t-button>
       </t-form-item>
-    </template> -->
+    </template>
 
     <t-form-item v-if="type !== 'qrcode'" class="btn-container">
       <t-button block size="large" type="submit"> 登录 </t-button>
@@ -72,17 +72,18 @@
 
     <div class="switch-container">
       <span v-if="type !== 'password'" class="tip" @click="switchType('password')">使用账号密码登录</span>
-      <!-- <span v-if="type !== 'qrcode'" class="tip" @click="switchType('qrcode')">使用微信扫码登录</span>
-      <span v-if="type !== 'phone'" class="tip" @click="switchType('phone')">使用手机号登录</span> -->
+      <span v-if="type !== 'qrcode'" class="tip" @click="switchType('qrcode')">使用微信扫码登录</span>
+      <span v-if="type !== 'phone'" class="tip" @click="switchType('phone')">使用手机号登录</span>
     </div>
   </t-form>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import QrcodeVue from 'qrcode.vue';
-import { FormInstanceFunctions, MessagePlugin } from 'tdesign-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
+import type { FormInstanceFunctions, FormRule } from 'tdesign-vue-next';
 import { useCounter } from '@/hooks';
 import { useUserStore } from '@/store';
 
@@ -91,12 +92,12 @@ const userStore = useUserStore();
 const INITIAL_DATA = {
   phone: '',
   account: 'admin',
-  password: 'admin',
+  password: 'admin123',
   verifyCode: '',
   checked: false,
 };
 
-const FORM_RULES = {
+const FORM_RULES: Record<string, FormRule[]> = {
   phone: [{ required: true, message: '手机号必填', type: 'error' }],
   account: [{ required: true, message: '账号必填', type: 'error' }],
   password: [{ required: true, message: '密码必填', type: 'error' }],
@@ -116,6 +117,7 @@ const switchType = (val: string) => {
 };
 
 const router = useRouter();
+const route = useRoute();
 
 /**
  * 发送验证码
@@ -134,9 +136,9 @@ const onSubmit = async ({ validateResult }) => {
       await userStore.login(formData.value);
 
       MessagePlugin.success('登陆成功');
-      router.push({
-        path: '/dashboard/base',
-      });
+      const redirect = route.query.redirect as string;
+      const redirectUrl = redirect ? decodeURIComponent(redirect) : '/dashboard';
+      router.push(redirectUrl);
     } catch (e) {
       console.log(e);
       MessagePlugin.error(e.message);

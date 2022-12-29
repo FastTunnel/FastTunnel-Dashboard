@@ -1,21 +1,17 @@
 export interface ListResult {
-  list: Array<ListModel>;
+  count: number;
+  rows: Array<ListModel>;
 }
+
 export interface ListModel {
-  adminName: string;
-  amount: string;
-  contractType: number;
-  index: number;
-  name: string;
-  no: string;
-  paymentType: number;
-  status: number;
-  updateTime: Date;
+  LocalIp: string;
+  LocalPort: number;
 }
 
 export interface CardListResult {
   list: Array<CardList>;
 }
+
 export interface CardList {
   banner: string;
   description: string;

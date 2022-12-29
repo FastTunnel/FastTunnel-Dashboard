@@ -18,6 +18,7 @@ export interface RequestOptions {
 }
 
 export interface Result<T = any> {
+  message: String;
   code: number;
   data: T;
 }

@@ -9,7 +9,7 @@
           <t-button theme="default" shape="square" variant="text" @click="changeCollapsed">
             <t-icon class="collapsed-icon" name="view-list" />
           </t-button>
-          <search :layout="layout" />
+          <!-- <search :layout="layout" /> -->
         </div>
       </template>
       <template v-if="layout !== 'side'" #default>
@@ -18,10 +18,10 @@
       <template #operations>
         <div class="operations-container">
           <!-- 搜索框 -->
-          <search v-if="layout !== 'side'" :layout="layout" />
+          <!-- <search v-if="layout !== 'side'" :layout="layout" /> -->
 
           <!-- 全局通知 -->
-          <notice />
+          <!-- <notice /> -->
 
           <t-tooltip placement="bottom" content="代码仓库">
             <t-button theme="default" shape="square" variant="text" @click="navToGitHub">
@@ -48,7 +48,7 @@
               <template #icon>
                 <t-icon class="header-user-avatar" name="user-circle" />
               </template>
-              <div class="header-user-account">Tencent</div>
+              <div class="header-user-account">{{ user.name }}</div>
               <template #suffix><t-icon name="chevron-down" /></template>
             </t-button>
           </t-dropdown>
@@ -64,13 +64,14 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, computed } from 'vue';
+import { computed } from 'vue';
+import type { PropType } from 'vue';
 import { useRouter } from 'vue-router';
-import { useSettingStore } from '@/store';
+import { useSettingStore, useUserStore } from '@/store';
 import { getActive } from '@/router';
 import { prefix } from '@/config/global';
 import LogoFull from '@/assets/assets-logo-full.svg?component';
-import { MenuRoute } from '@/types/interface';
+import type { MenuRoute } from '@/types/interface';
 
 import Notice from './Notice.vue';
 import Search from './Search.vue';
@@ -109,6 +110,9 @@ const props = defineProps({
 
 const router = useRouter();
 const settingStore = useSettingStore();
+const userStore = useUserStore();
+
+const user = userStore.userInfo;
 
 const toggleSettingPanel = () => {
   settingStore.updateConfig({
@@ -143,15 +147,18 @@ const handleNav = (url) => {
 };
 
 const handleLogout = () => {
-  router.push(`/login?redirect=${router.currentRoute.value.fullPath}`);
+  router.push({
+    path: '/login',
+    query: { redirect: encodeURIComponent(router.currentRoute.value.fullPath) },
+  });
 };
 
 const navToGitHub = () => {
-  window.open('https://github.com/tencent/tdesign-vue-next-starter');
+  window.open('https://github.com/FastTunnel/FastTunnel');
 };
 
 const navToHelper = () => {
-  window.open('http://tdesign.tencent.com/starter/docs/get-started');
+  window.open('https://docs.suidao.io');
 };
 </script>
 <style lang="less" scoped>

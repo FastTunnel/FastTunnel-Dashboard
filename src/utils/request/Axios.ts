@@ -156,6 +156,7 @@ export class VAxios {
       this.instance
         .request<any, AxiosResponse<Result>>(!config.retryCount ? conf : config)
         .then((res: AxiosResponse<Result>) => {
+          console.log(res);
           if (transformRequestHook && isFunction(transformRequestHook)) {
             try {
               const ret = transformRequestHook(res, opt);
@@ -165,6 +166,7 @@ export class VAxios {
             }
             return;
           }
+
           resolve(res as unknown as Promise<T>);
         })
         .catch((e: Error | AxiosError) => {

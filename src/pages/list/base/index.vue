@@ -3,16 +3,7 @@
     <t-card class="list-card-container">
       <t-row justify="space-between">
         <div class="left-operation-container">
-          <t-button @click="handleSetupContract"> 新建合同 </t-button>
-          <t-button variant="base" theme="default" :disabled="!selectedRowKeys.length"> 导出合同 </t-button>
           <p v-if="!!selectedRowKeys.length" class="selected-count">已选{{ selectedRowKeys.length }}项</p>
-        </div>
-        <div class="search-input">
-          <t-input v-model="searchValue" placeholder="请输入你需要搜索的内容" clearable>
-            <template #suffix-icon>
-              <search-icon size="20px" />
-            </template>
-          </t-input>
         </div>
       </t-row>
       <t-table
@@ -24,7 +15,7 @@
         :pagination="pagination"
         :selected-row-keys="selectedRowKeys"
         :loading="dataLoading"
-        :header-affixed-top="{ offsetTop, container: getContainer }"
+        :header-affixed-top="headerAffixedTop"
         @page-change="rehandlePageChange"
         @change="rehandleChange"
         @select-change="rehandleSelectChange"
@@ -41,15 +32,6 @@
           <p v-if="row.contractType === CONTRACT_TYPES.SUB">待审核</p>
           <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">待履行</p>
         </template>
-        <template #paymentType="{ row }">
-          <div v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
-            付款<trend class="dashboard-item-trend" type="up" />
-          </div>
-          <div v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.RECEIPT" class="payment-col">
-            收款<trend class="dashboard-item-trend" type="down" />
-          </div>
-        </template>
-
         <template #op="slotProps">
           <a class="t-button-link" @click="handleClickDetail()">详情</a>
           <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
@@ -76,11 +58,9 @@ export default {
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 
 import { CONTRACT_STATUS, CONTRACT_TYPES, CONTRACT_PAYMENT_TYPES } from '@/constants';
-import Trend from '@/components/trend/index.vue';
 import { getList } from '@/api/list';
 import { useSettingStore } from '@/store';
 import { prefix } from '@/config/global';
@@ -96,17 +76,15 @@ const pagination = ref({
   defaultCurrent: 1,
 });
 
-const searchValue = ref('');
-
 const dataLoading = ref(false);
 const fetchData = async () => {
   dataLoading.value = true;
   try {
-    const { list } = await getList();
-    data.value = list;
+    const { count, rows } = await getList();
+    data.value = rows;
     pagination.value = {
       ...pagination.value,
-      total: list.length,
+      total: count,
     };
   } catch (e) {
     console.log(e);
@@ -130,7 +108,7 @@ onMounted(() => {
 
 const confirmVisible = ref(false);
 
-const selectedRowKeys = ref([1, 2]);
+const selectedRowKeys = ref([]);
 
 const router = useRouter();
 
@@ -169,21 +147,19 @@ const rehandleChange = (changeParams, triggerAndData) => {
 const handleClickDetail = () => {
   router.push('/detail/base');
 };
-const handleSetupContract = () => {
-  router.push('/form/base');
-};
+
 const handleClickDelete = (row: { rowIndex: any }) => {
   deleteIdx.value = row.rowIndex;
   confirmVisible.value = true;
 };
 
-const offsetTop = computed(() => {
-  return store.isUseTabsRouter ? 48 : 0;
-});
-
-const getContainer = () => {
-  return document.querySelector(`.${prefix}-layout`);
-};
+const headerAffixedTop = computed(
+  () =>
+    ({
+      offsetTop: store.isUseTabsRouter ? 48 : 0,
+      container: `.${prefix}-layout`,
+    } as any),
+);
 </script>
 
 <style lang="less" scoped>

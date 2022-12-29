@@ -9,13 +9,13 @@ export default [
     name: 'list',
     component: Layout,
     redirect: '/list/base',
-    meta: { title: '列表页', icon: ListIcon },
+    meta: { title: '隧道管理', icon: ListIcon },
     children: [
       {
         path: 'base',
         name: 'ListBase',
         component: () => import('@/pages/list/base/index.vue'),
-        meta: { title: '基础列表页' },
+        meta: { title: '端口转发' },
       },
       {
         path: 'card',

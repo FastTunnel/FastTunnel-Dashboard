@@ -5,7 +5,8 @@ import type { AxiosTransform, CreateAxiosOptions } from './AxiosTransform';
 import { VAxios } from './Axios';
 import proxy from '@/config/proxy';
 import { joinTimestamp, formatRequestDate, setObjToUrlParams } from './utils';
-import { TOKEN_NAME } from '@/config/global';
+// import { TOKEN_NAME } from '@/config/global';
+import { useUserStore } from '@/store';
 
 const env = import.meta.env.MODE || 'development';
 
@@ -49,7 +50,7 @@ const transform: AxiosTransform = {
       return data.data;
     }
 
-    throw new Error(`请求接口错误, 错误码: ${code}`);
+    throw new Error(`请求接口错误: ${data.message}`);
   },
 
   // 请求前处理配置
@@ -110,7 +111,8 @@ const transform: AxiosTransform = {
   // 请求拦截器处理
   requestInterceptors: (config, options) => {
     // 请求之前处理config
-    const token = localStorage.getItem(TOKEN_NAME);
+    const userStore = useUserStore();
+    const { token } = userStore;
     if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
       // jwt token
       (config as Recordable).headers.Authorization = options.authenticationScheme
@@ -156,7 +158,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
         // 超时
         timeout: 10 * 1000,
         // 携带Cookie
-        withCredentials: true,
+        withCredentials: false,
         // 头信息
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         // 数据处理方式
