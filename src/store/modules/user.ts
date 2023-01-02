@@ -4,6 +4,7 @@ import { store, usePermissionStore } from '@/store';
 import { login } from '@/api/user';
 
 const InitUserInfo = {
+  name: '',
   roles: [],
 };
 
@@ -65,7 +66,7 @@ export const useUserStore = defineStore('user', {
 
         return {
           name: user.Name,
-          roles: ['UserIndex', 'DashboardBase', 'login', 'ListBase'],
+          roles: ['UserIndex', 'DashboardBase', 'login', 'base'],
         };
         // }
         // return {

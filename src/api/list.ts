@@ -1,19 +1,34 @@
 import { request } from '@/utils/request';
 import type { CardListResult, ListResult } from '@/api/model/listModel';
+import type { TunnelClient } from '@/api/model/tunnelClient';
 
 const Api = {
-  BaseList: '/system/GetAllWebList',
-  CardList: '/get-card-list',
+  WebList: '/system/GetAllWebList',
+  ForwardList: '/system/GetAllForwardList',
+  ClientList: '/system/Clients',
+  ResponseTempList: '/system/getResponseTempList',
 };
 
-export function getList() {
+export function getWebList() {
   return request.get<ListResult>({
-    url: Api.BaseList,
+    url: Api.WebList,
   });
 }
 
-export function getCardList() {
-  return request.get<CardListResult>({
-    url: Api.CardList,
+export function getForwardList() {
+  return request.get<ListResult>({
+    url: Api.ForwardList,
+  });
+}
+
+export function getClients() {
+  return request.get<Array<TunnelClient>>({
+    url: Api.ClientList,
+  });
+}
+
+export function getResponseTempList() {
+  return request.get<ListResult>({
+    url: Api.ResponseTempList,
   });
 }

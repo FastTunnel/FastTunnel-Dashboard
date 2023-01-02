@@ -10,6 +10,8 @@ function filterPermissionsRouters(routes: Array<RouteRecordRaw>, roles: Array<un
     const children = [];
     route.children?.forEach((childRouter) => {
       const roleCode = childRouter.meta?.roleCode || childRouter.name;
+      console.log('roleCode:', roleCode);
+
       if (roles.indexOf(roleCode) !== -1) {
         children.push(childRouter);
       } else {
